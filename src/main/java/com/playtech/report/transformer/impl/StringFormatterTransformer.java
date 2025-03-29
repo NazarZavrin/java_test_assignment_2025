@@ -31,23 +31,21 @@ public class StringFormatterTransformer implements Transformer {
             for (int j = 0; j < inputs.size(); j++) {
                 /*Column input = inputs.get(j);
                 String columnName = input.getName();// input field name
-                Object columnValue = row.get(columnName);// input field value*/
-                /*
-                 * System.out.println(columnName);
-                 * Column.DataType columnType = input.getType();
-                 * switch (columnType) {
-                 * case Column.DataType.DOUBLE:
-                 * columnValue = columnValue.getClass() == String.class ?
-                 * Double.parseDouble((String) columnValue) : columnValue;
-                 * break;
-                 * case Column.DataType.INTEGER:
-                 * columnValue = columnValue.getClass() == String.class ?
-                 * Integer.parseInt((String) columnValue) : columnValue;
-                 * break;
-                 * default:
-                 * break;
-                 * }
-                 */
+                Object columnValue = row.get(columnName);// input field value
+                // System.out.println(columnName);
+                Column.DataType columnType = input.getType();
+                switch (columnType) {
+                    case Column.DataType.DOUBLE:
+                        columnValue = columnValue.getClass() == String.class ? Double.parseDouble((String) columnValue)
+                                : columnValue;
+                        break;
+                    case Column.DataType.INTEGER:
+                        columnValue = columnValue.getClass() == String.class ? Integer.parseInt((String) columnValue)
+                                : columnValue;
+                        break;
+                    default:
+                        break;
+                }*/
                 // String formatted = String.format(format, columnValue);
                 // row.put(output.getName(), formatted);
             }
