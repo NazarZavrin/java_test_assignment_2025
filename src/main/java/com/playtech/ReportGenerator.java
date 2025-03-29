@@ -32,7 +32,6 @@ public class ReportGenerator {
         String csvDataFilePath = "input/casino_gaming_results.csv",
                 reportXmlFilePath = "input/DailyBetWinLossReport.xml", outputDirectoryPath = "my_output";
         Report report = null;
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
         try {
             report = XmlParser.parseReport(reportXmlFilePath);
             makeReport(csvDataFilePath, report);
@@ -51,9 +50,10 @@ public class ReportGenerator {
             System.exit(1);
         }
         try (BufferedReader fileReader = new BufferedReader(new FileReader(dataFile))) {
+            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
             List<String> fieldNames = new ArrayList<String>();
             String lineText = null;
-            int lineNum = 0, max = 2;
+            int lineNum = 0, max = 7;
             while ((lineText = fileReader.readLine()) != null) {
                 if (lineNum >= max) {
                     break;
@@ -70,21 +70,28 @@ public class ReportGenerator {
                     row.put(fieldNames.get(i), values.get(i));// received values put to the Map
                     // rows.get(0).put(report.getInputs().get(i).getName(), values.get(i));//
                 }
-                System.out.println(mapToJson(row));
-                List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();// for transform
-                rows.add(row);// put one element
-                report.getTransformers().forEach(t -> t.transform(report, rows));
-                System.out.println("-----");
-                System.out.println(mapToJson(rows.get(0)));
+                // System.out.println(mapToJson(row));
+                // List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();// for transform // delete
+                result.add(row);// put one element
+
+                // System.out.println("-----");
+                
             }
+            report.getTransformers().forEach(t -> t.transform(report, result));
+            System.out.println(mapToJsonl(result.get(0)));
         } catch (IOException e) {
             System.err.println("File reading error");
             System.exit(1);
         }
     }
-    public static <T,U> String mapToJson(Map<T,U> map) {
+    public static <T, U> String mapToJsonl(Map<T, U> map) {
         return map.entrySet().stream()
-                .map(e -> String.format("\t\"%s\":\"%s\"", e.getKey(), e.getValue()))
+                .map(e -> String.format("\"%s\": \"%s\"", e.getKey(), e.getValue()))
+                .collect(Collectors.joining(", ", "{ ", " }"));
+    }
+    public static <T, U> String mapToJson(Map<T, U> map) {
+        return map.entrySet().stream()
+                .map(e -> String.format("\t\"%s\": \"%s\"", e.getKey(), e.getValue()))
                 .collect(Collectors.joining(",\n", "{\n", "\n}"));
     }
 }

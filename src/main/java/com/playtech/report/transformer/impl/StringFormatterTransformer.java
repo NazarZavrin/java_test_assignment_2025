@@ -27,25 +27,32 @@ public class StringFormatterTransformer implements Transformer {
     public void transform(Report report, List<Map<String, Object>> rows) {
         for (int i = 0; i < rows.size(); i++) {
             Map<String, Object> row = rows.get(i);
+            Object[] columnValues = inputs.stream().map(col -> row.get(col.getName())).toArray();
             for (int j = 0; j < inputs.size(); j++) {
-                Column input = inputs.get(i);
+                /*Column input = inputs.get(j);
                 String columnName = input.getName();// input field name
-                Object columnValue = row.get(columnName);// input field value
-                System.out.println(columnName);
-                Column.DataType columnType = input.getType();
-                switch (columnType) {
-                    case Column.DataType.DOUBLE:
-                        columnValue = columnValue.getClass() == String.class ? Double.parseDouble((String) columnValue) : columnValue;
-                        break;
-                    case Column.DataType.INTEGER:
-                        columnValue = columnValue.getClass() == String.class ? Integer.parseInt((String) columnValue) : columnValue;
-                        break;
-                    default:
-                        break;
-                }
-                String formatted = String.format(format, columnValue);
-                row.put(output.getName(), formatted);
+                Object columnValue = row.get(columnName);// input field value*/
+                /*
+                 * System.out.println(columnName);
+                 * Column.DataType columnType = input.getType();
+                 * switch (columnType) {
+                 * case Column.DataType.DOUBLE:
+                 * columnValue = columnValue.getClass() == String.class ?
+                 * Double.parseDouble((String) columnValue) : columnValue;
+                 * break;
+                 * case Column.DataType.INTEGER:
+                 * columnValue = columnValue.getClass() == String.class ?
+                 * Integer.parseInt((String) columnValue) : columnValue;
+                 * break;
+                 * default:
+                 * break;
+                 * }
+                 */
+                // String formatted = String.format(format, columnValue);
+                // row.put(output.getName(), formatted);
             }
+            String formatted = String.format(format, columnValues);
+            row.put(output.getName(), formatted);
         }
         // return rows;
     }
