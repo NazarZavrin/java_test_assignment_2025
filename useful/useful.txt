@@ -1,0 +1,6 @@
+Java groupingBy links:
+https://www.baeldung.com/java-groupingby-collector
+https://stackoverflow.com/a/26346574
+
+Launch Java project (VSCode's launch button)
+e:; cd 'e:\Programming projects\Java\java_test_assignment_2025'; & 'E:\Software\JDK\bin\java.exe' '@C:\Users\Заврин Назар\AppData\Local\Temp\cp_b88ihzkvflek724ncu3f8ne2b.argfile' 'com.playtech.ReportGenerator'

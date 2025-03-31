@@ -27,11 +27,14 @@ public class StringFormatterTransformer implements Transformer {
     public void transform(Report report, List<Map<String, Object>> rows) {
         for (int i = 0; i < rows.size(); i++) {
             Map<String, Object> row = rows.get(i);
-            Object[] columnValues = inputs.stream().map(col -> row.get(col.getName())).toArray();
+            Object[] columnValues = inputs.stream().map(col -> row.get(col.getName())).filter(x -> x != null).toArray();
             for (int j = 0; j < inputs.size(); j++) {
-                /*Column input = inputs.get(j);
+                Column input = inputs.get(j);
                 String columnName = input.getName();// input field name
                 Object columnValue = row.get(columnName);// input field value
+                if (columnValue == null) {
+                    continue;
+                }
                 // System.out.println(columnName);
                 Column.DataType columnType = input.getType();
                 switch (columnType) {
@@ -45,12 +48,14 @@ public class StringFormatterTransformer implements Transformer {
                         break;
                     default:
                         break;
-                }*/
+                }
                 // String formatted = String.format(format, columnValue);
                 // row.put(output.getName(), formatted);
             }
-            String formatted = String.format(format, columnValues);
-            row.put(output.getName(), formatted);
+            if (columnValues.length > 0) {
+                String formatted = String.format(format, columnValues);
+                row.put(output.getName(), formatted);
+            }
         }
         // return rows;
     }

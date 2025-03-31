@@ -14,7 +14,11 @@ public class OrderingTransformer implements Transformer {
     public OrderingTransformer(Column input, Order order) {}
 
     @Override
-    public void transform(Report report, List<Map<String, Object>> rows) {}
+    public void transform(Report report, List<Map<String, Object>> rows) {
+        /*if (columnValue == null) {
+                    continue;
+                } */
+    }
 
     public enum Order {
         ASC,

@@ -32,6 +32,9 @@ public class MathOperationTransformer implements Transformer {
                 Column input = inputs.get(j);
                 String columnName = input.getName();// input field name
                 Object columnValue = row.get(columnName);// input field value
+                if (columnValue == null) {
+                    continue;
+                }
                 Column.DataType columnType = input.getType();
                 switch (columnType) {
                     case Column.DataType.DOUBLE:

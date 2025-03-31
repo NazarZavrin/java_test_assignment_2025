@@ -29,8 +29,11 @@ public class DateTimeFormatterTransformer implements Transformer {
         for (int i = 0; i < rows.size(); i++) {
             Map<String, Object> row = rows.get(i);
             Object columnValue = row.get(input.getName());
-            LocalDateTime dateTime = LocalDateTime.now();
+            if (columnValue == null) {
+                continue;
+            }
             Column.DataType columnType = input.getType();
+            LocalDateTime dateTime = LocalDateTime.now();
             switch (columnType) {
                 case Column.DataType.DATETIME:
                     dateTime = columnValue instanceof String 

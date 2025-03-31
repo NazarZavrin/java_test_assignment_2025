@@ -53,7 +53,7 @@ public class ReportGenerator {
             List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
             List<String> fieldNames = new ArrayList<String>();
             String lineText = null;
-            int lineNum = 0, max = 7;
+            int lineNum = 0, max = Integer.MAX_VALUE;
             while ((lineText = fileReader.readLine()) != null) {
                 if (lineNum >= max) {
                     break;
@@ -78,7 +78,9 @@ public class ReportGenerator {
                 
             }
             report.getTransformers().forEach(t -> t.transform(report, result));
-            System.out.println(mapToJsonl(result.get(0)));
+            System.out.println("-----");
+            result.stream().limit(7).map(item -> mapToJsonl(item)).forEach(System.out::println);
+            // System.out.println(mapToJsonl(result.get(0)));
         } catch (IOException e) {
             System.err.println("File reading error");
             System.exit(1);
