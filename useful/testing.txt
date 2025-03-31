@@ -1,0 +1,9 @@
+--- Testing of AVG in AggregatorTransformer
+
+2021-04-15 = 5 AVG "BetAmountSum" = 246,30 / 5 = 49,26 AVG "WinAmountSum" = 235,20 / 5 = 47,04
+2020-11-05 = 10 AVG "BetAmountSum" = 441,70 / 10 = 44,17 AVG "PlayersProfit" = -385,50 / 10 = -38,55
+2025-02-02 = 7 AVG "BetAmountSum" = 278,80 / 7 = 39,83 AVG "LossAmountSum" = 223,50 / 7 = 31,93
+-----
+{ "BetAmountSum": "246,30 EUR", "LossAmountSum": "141,10 EUR", "PlayersProfit": "-152,20 EUR", "StartDate": "2021-04-15", "WinAmountSum": "235,20 EUR" }
+{ "BetAmountSum": "441,70 EUR", "LossAmountSum": "294,20 EUR", "PlayersProfit": "-385,50 EUR", "StartDate": "2020-11-05", "WinAmountSum": "350,40 EUR" }
+{ "BetAmountSum": "278,80 EUR", "LossAmountSum": "223,50 EUR", "PlayersProfit": "-387,10 EUR", "StartDate": "2025-02-02", "WinAmountSum": "115,20 EUR" }

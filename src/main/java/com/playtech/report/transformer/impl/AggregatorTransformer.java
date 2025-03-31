@@ -26,22 +26,23 @@ public class AggregatorTransformer implements Transformer {
     @Override
     public void transform(Report report, List<Map<String, Object>> rows) {
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        Map<Object, Integer> rowCountForGroupByKey = new TreeMap<Object, Integer>();
         // Map<Object,List<Map<String,Object>>> groups =
         // rows.stream().collect(Collectors.groupingBy(row ->
         // row.get(groupByColumn.getName()), Collectors.toList()));
-        int rowIndex = 0;
-        for (; rowIndex < rows.size(); rowIndex++) {
+        for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
             Map<String, Object> row = rows.get(rowIndex);
             Map<String, Object> newRow = new TreeMap<String, Object>();
-            boolean groupByValueWasFound = false;
+            boolean groupByValueRepeats = false;
             for (int newRowIndex = 0; newRowIndex < result.size(); newRowIndex++) {
                 if (result.get(newRowIndex).get(this.groupByColumn.getName()).equals(row.get(this.groupByColumn.getName()))) {
                     newRow = result.get(newRowIndex);
-                    groupByValueWasFound = true;
+                    groupByValueRepeats = true;
                     break;
                 }
             }
             newRow.put(this.groupByColumn.getName(), row.get(this.groupByColumn.getName()));
+            rowCountForGroupByKey.put(row.get(this.groupByColumn.getName()), rowCountForGroupByKey.getOrDefault(row.get(this.groupByColumn.getName()), 0) + 1);
             for (int aggColIndex = 0; aggColIndex < this.aggregateColumns.size(); aggColIndex++) {
                 AggregateBy aggCol = this.aggregateColumns.get(aggColIndex);
                 Object columnValue = row.get(aggCol.input.getName());
@@ -53,10 +54,15 @@ public class AggregatorTransformer implements Transformer {
                     case Column.DataType.DOUBLE: {
                         columnValue = columnValue instanceof String
                                 ? Double.parseDouble((String) columnValue)
-                                : columnValue == null ? 0.0 : columnValue;
-                        Double prev = (Double) newRow.get(aggCol.getOutput().getName());
-                        prev = prev == null ? 0.0 : prev;// if prev was null it was converted to 0.0
+                                : columnValue;
+                        Double prev = (Double) newRow.getOrDefault(aggCol.getOutput().getName(), 0.0);
+                        if (aggCol.method == Method.AVG) {
+                            prev = prev * (rowCountForGroupByKey.get(row.get(this.groupByColumn.getName())) - 1);
+                        }
                         prev += (Double) columnValue;
+                        if (aggCol.method == Method.AVG) {
+                            prev = prev / rowCountForGroupByKey.get(row.get(this.groupByColumn.getName()));
+                        }
                         if (aggCol.output.getType() == Column.DataType.INTEGER) {
                             newRow.put(aggCol.getOutput().getName(), Math.round(prev));
                         } else {
@@ -67,10 +73,15 @@ public class AggregatorTransformer implements Transformer {
                     case Column.DataType.INTEGER: {
                         columnValue = columnValue instanceof String
                                 ? Integer.parseInt((String) columnValue)
-                                : columnValue == null ? 0 : columnValue;
-                        Integer prev = (Integer) newRow.get(aggCol.getOutput().getName());
-                        prev = prev == null ? 0 : prev;// if prev was null it was converted to 0
+                                : columnValue;
+                        Integer prev = (Integer) newRow.getOrDefault(aggCol.getOutput().getName(), 0);
+                        if (aggCol.method == Method.AVG) {
+                            prev = prev * (rowCountForGroupByKey.get(row.get(this.groupByColumn.getName())) - 1);
+                        }
                         prev += (Integer) columnValue;
+                        if (aggCol.method == Method.AVG) {
+                            prev = prev / rowCountForGroupByKey.get(row.get(this.groupByColumn.getName()));
+                        }
                         if (aggCol.output.getType() == Column.DataType.DOUBLE) {
                             newRow.put(aggCol.getOutput().getName(), (double) prev);
                         } else {
@@ -82,15 +93,15 @@ public class AggregatorTransformer implements Transformer {
                         break;
                 }
             }
-            if (groupByValueWasFound == false) {
+            if (groupByValueRepeats == false) {
                 result.add(newRow);
             }
         }
-        // !!! AVG result divide by rowIndex
-        // System.out.println(result.stream().filter(map -> map.get("StartDate").equals("2021-04-15")).toList());
-        // System.out.println(result.stream().limit(7).toList());
         rows.clear();
         result.forEach(row -> rows.add(row));
+        // System.out.println(rowCountForGroupByKey.get("2021-04-15"));
+        // System.out.println(result.stream().filter(map -> map.get("StartDate").equals("2021-04-15")).toList());
+        // System.out.println(result.stream().limit(7).toList());
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
