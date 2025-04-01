@@ -28,9 +28,6 @@ public class Report {
     @XmlJavaTypeAdapter(TransformerAdapter.class)
     private List<Transformer> transformers;
 
-    public Transformer getTransformerForInputs(int index) {
-        return transformers.get(index);
-    }
     public List<Transformer> getTransformers() {
         return transformers;
     }

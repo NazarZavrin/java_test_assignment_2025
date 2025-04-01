@@ -2,7 +2,6 @@ package com.playtech.report.transformer.impl;
 
 import com.playtech.report.Report;
 import com.playtech.report.column.Column;
-import com.playtech.report.column.Column.DataType;
 import com.playtech.report.transformer.Transformer;
 
 import java.time.LocalDate;
@@ -17,7 +16,6 @@ public class DateTimeFormatterTransformer implements Transformer {
     String format;
     Column output;
 
-    // TODO: Implement transformer logic
     public DateTimeFormatterTransformer(Column input, String format, Column output) {
         this.input = input;
         this.format = format;

@@ -7,7 +7,9 @@ import jakarta.xml.bind.JAXBException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,32 +20,28 @@ import java.util.stream.Collectors;
 public class ReportGenerator {
 
     public static void main(String[] args) {
-        /*
-         * if (args.length != 3) {
-         * System.err.
-         * println("Application should have 3 paths as arguments: csv file path, xml file path and output directory"
-         * );
-         * System.exit(1);
-         * }
-         * String csvDataFilePath = args[0], reportXmlFilePath = args[1],
-         * outputDirectoryPath = args[2];
-         */
+        // if (args.length != 3) {
+        // System.err.println(
+        // "Application should have 3 paths as arguments: csv file path, xml file path
+        // and output directory");
+        // System.exit(1);
+        // }
+        // String csvDataFilePath = args[0], reportXmlFilePath = args[1],
+        // outputDirectoryPath = args[2];
         // maybe tou will need \\
         String csvDataFilePath = "input/casino_gaming_results.csv",
                 reportXmlFilePath = "input/DailyBetWinLossReport.xml", outputDirectoryPath = "my_output";
         Report report = null;
         try {
             report = XmlParser.parseReport(reportXmlFilePath);
-            makeReport(csvDataFilePath, report);
+            makeReport(csvDataFilePath, report, outputDirectoryPath);
         } catch (JAXBException e) {
             System.err.println("Parsing of the xml file failed:");
             throw new RuntimeException(e);
         }
-        // TODO: Implement logic
-
     }
 
-    private static void makeReport(String csvDataFilePath, Report report) {
+    private static void makeReport(String csvDataFilePath, Report report, String outputDirectoryPath) {
         File dataFile = new File(csvDataFilePath);
         if (dataFile.exists() == false) {
             System.err.println("csv file wasn't found");
@@ -68,29 +66,55 @@ public class ReportGenerator {
                 Map<String, Object> row = new TreeMap<String, Object>();
                 for (int i = 0; i < values.size(); i++) {
                     row.put(fieldNames.get(i), values.get(i));// received values put to the Map
-                    // rows.get(0).put(report.getInputs().get(i).getName(), values.get(i));//
                 }
                 // System.out.println(mapToJson(row));
-                // List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();// for transform // delete
-                result.add(row);// put one element
-
-                // System.out.println("-----");
-                
+                result.add(row);
             }
-            report.getTransformers().forEach(t -> t.transform(report, result));
-            System.out.println("-----");
-            result.stream().limit(7).map(item -> mapToJsonl(item)).forEach(System.out::println);
+            report.getTransformers().forEach(transformer -> transformer.transform(report, result));
+            // System.out.println("-----");
+            // result.stream().limit(7).map(item -> mapToJsonl(item)).forEach(System.out::println);
             // System.out.println(mapToJsonl(result.get(0)));
+            File directory = new File(outputDirectoryPath);
+            if (directory.exists() == false) {
+                try {
+                    boolean success = directory.mkdir();
+                    if (!success) {
+                        throw new IOException();
+                    } else {
+                        // System.out.println("Directory created");
+                    }
+                } catch (IOException e) {
+                    System.out.println("Directory creation error");
+                }
+            }
+            String outputFileName = "DailyBetWinLossReport.jsonl";
+            // System.out.println(Paths.get(outputDirectoryPath,
+            // outputFileName).toString());
+            File file = new File(Paths.get(outputDirectoryPath, outputFileName).toString());
+            try {
+                FileWriter fileWriter = new FileWriter(file, false);// false - overwrite
+                for (int i = 0; i < result.size(); i++) {
+                    Map<String, Object> row = result.get(i);
+                    fileWriter.write(mapToJsonl(row) + "\n");
+                }
+                // fileWriter.write(LocalTime.now().toString() + "\n");
+                fileWriter.close();
+            } catch (IOException e) {
+                System.out.println("File writing error");
+                System.exit(1);
+            }
         } catch (IOException e) {
             System.err.println("File reading error");
             System.exit(1);
         }
     }
+
     public static <T, U> String mapToJsonl(Map<T, U> map) {
         return map.entrySet().stream()
                 .map(e -> String.format("\"%s\": \"%s\"", e.getKey(), e.getValue()))
                 .collect(Collectors.joining(", ", "{ ", " }"));
     }
+
     public static <T, U> String mapToJson(Map<T, U> map) {
         return map.entrySet().stream()
                 .map(e -> String.format("\t\"%s\": \"%s\"", e.getKey(), e.getValue()))

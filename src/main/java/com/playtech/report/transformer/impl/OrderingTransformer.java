@@ -3,15 +3,12 @@ package com.playtech.report.transformer.impl;
 import com.playtech.report.Report;
 import com.playtech.report.column.Column;
 import com.playtech.report.transformer.Transformer;
-import com.playtech.report.transformer.impl.OrderingTransformer.Order;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public class OrderingTransformer implements Transformer {
     public final static String NAME = "Ordering";

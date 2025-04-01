@@ -2,11 +2,8 @@ package com.playtech.report.transformer.impl;
 
 import com.playtech.report.Report;
 import com.playtech.report.column.Column;
-import com.playtech.report.column.Column.DataType;
 import com.playtech.report.transformer.Transformer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +13,6 @@ public class StringFormatterTransformer implements Transformer {
     String format;
     Column output;
 
-    // TODO: Implement transformer logic
     public StringFormatterTransformer(List<Column> inputs, String format, Column output) {
         this.inputs = inputs;
         this.format = format;
@@ -35,7 +31,6 @@ public class StringFormatterTransformer implements Transformer {
                 if (columnValue == null) {
                     continue;
                 }
-                // System.out.println(columnName);
                 Column.DataType columnType = input.getType();
                 switch (columnType) {
                     case Column.DataType.DOUBLE:
@@ -49,14 +44,11 @@ public class StringFormatterTransformer implements Transformer {
                     default:
                         break;
                 }
-                // String formatted = String.format(format, columnValue);
-                // row.put(output.getName(), formatted);
             }
             if (columnValues.length > 0) {
                 String formatted = String.format(format, columnValues);
                 row.put(output.getName(), formatted);
             }
         }
-        // return rows;
     }
 }
